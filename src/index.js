@@ -3,12 +3,10 @@ import {
 } from './mixin/init'
 
 function Bzswipe(el, options) {
-  this.$el = typeof el === 'string' ? document.querySelector(el) : el;
-  if (!this.$el) {
+  var $el = typeof el === 'string' ? document.querySelector(el) : el;
+  if (!$el) {
     console.error('can not resolve the wrapper dom')
   }
-  this.options = options || {};
-  this._init()
+  return initMixin($el, options)
 }
-initMixin(Bzswipe)
 export default Bzswipe

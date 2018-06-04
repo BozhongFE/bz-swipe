@@ -21,7 +21,10 @@ npm run build:demo
 # build for production with minification
 npm run build
 ```
-
+## Install Local Packages
+```bash
+npm install git+https://github.com/BozhongFE/bz-swipe.git#version
+```
 # Options
 ## Attributes
 Here list Props on bz-swipe component
@@ -59,10 +62,10 @@ import Bzswipe from 'bz-swipe'
 const mySwipe = new Bzswipe('.bz-swipe');
 ```
 
-in Requirejs with Bozhong config:
+in Requirejs with Bozhong's config:
 
 ```js
-require(['mod/bz-swipe/version/Bzswipe.min'], function (Bzswipe) {
+require(['mod/bz-swipe/version/bz-swipe'], function (Bzswipe) {
   var mySwipe = new Bzwipe('.bz-swipe', {
     auto: 2000,
     speed: 500

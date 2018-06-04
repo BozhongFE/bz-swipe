@@ -9,8 +9,8 @@
     "slider",
     "touch"
   ],
-  "main": "dist/Bzswipe.umd.js",
-  "module": "dist/Bzswipe.esm.js",
+  "main": "dist/bz-swipe.umd.js",
+  "module": "dist/bz-swipe.esm.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.config.js --hot",
     "build": "node build/rollup.config.js",

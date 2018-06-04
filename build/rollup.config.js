@@ -42,7 +42,7 @@ const buildList = {
       commonjs()
     ],
     format: 'umd',
-    output: 'dist/Bzswipe.umd.js',
+    output: path.join('dist/', name + '.umd.js'),
   },
   'esm': {
     plugins: [
@@ -50,14 +50,14 @@ const buildList = {
       commonjs()
     ],
     format: 'es',
-    output: 'dist/Bzswipe.esm.js',
+    output: path.join('dist/', name + '.esm.js'),
   },
   'mod-min': {
-    output: path.join(modulePath, 'Bzswipe.min.js'),
+    output: path.join(modulePath, name + '.js'),
     format: 'umd'
   },
   'mod': {
-    output: path.join(modulePath, 'Bzswipe.js'),
+    output: path.join(modulePath, name + '-debug.js'),
     format: 'umd'
   }
 }
@@ -73,7 +73,7 @@ function getConfig(opts) {
     output: {
       file: opts.output,
       format: opts.format,
-      name: 'Bzswipe'
+      name: name
     }
   };
 
@@ -98,7 +98,7 @@ function build(builds) {
 }
 
 async function buildEntry(config) {
-  const isProd = /min\.js$/.test(config.output.file)
+  const isProd = !/debug\.js$/.test(config.output.file) && !/(\w+\.){2}js$/.test(config.output.file);
   const bundle = await rollup.rollup(config.input);
   await bundle.generate(config.output).then(function (result) {
     const code = result.code;
