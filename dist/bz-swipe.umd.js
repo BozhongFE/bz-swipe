@@ -62,6 +62,22 @@
     }
   };
 
+  var on = (function () {
+    if (document.addEventListener) {
+      return function (element, event, handler) {
+        if (element && event && handler) {
+          element.addEventListener(event, handler, false);
+        }
+      };
+    } else {
+      return function (element, event, handler) {
+        if (element && event && handler) {
+          element.attachEvent('on' + event, handler);
+        }
+      };
+    }
+  })();
+
   function addStyleToHead(cssString) {
     var doc = document;
     var style = doc.createElement("style");
@@ -102,7 +118,8 @@
         return false;
       })(document.createElement('swipe'))
     };
-    var paginationStyleText = '#bz-swipe-indicators{width:100%;position:absolute;bottom:15px;text-align:center}' +
+    var paginationStyleText =
+      '#bz-swipe-indicators{width:100%;position:absolute;bottom:15px;text-align:center}' +
       '.bz-swipe-indicator{width:8px;height:8px;display:inline-block;border-radius:100%;background:#000;opacity:0.2;margin:0 3px;}' +
       '#bz-swipe-indicators .is-active{background:#bfbfbf;}' +
       '.bz-swipe-wrap .is-active{display:block;-webkit-transform:none;transform:none;}';
@@ -116,6 +133,7 @@
     options.continuous =
       options.continuous !== undefined ? options.continuous : true;
     var showPagination = options.showPagination ? options.showPagination : false;
+    var clickable = options.clickable ? options.clickable : false;
 
     function setup() {
       // cache slides
@@ -182,19 +200,37 @@
       var paginationHTML = '';
       $pagination.innerHTML = paginationHTML;
       for (var i = 0; i < length; i++) {
-        paginationHTML += "<span class=\"bz-swipe-indicator " + (setActive(i)) + "\"></span>";
+        paginationHTML += "<span class=\"bz-swipe-indicator " + (setActive(
+          i
+        )) + "\" data-index=\"" + i + "\"></span>";
       }
       $pagination.innerHTML = paginationHTML;
       pagination = container.querySelectorAll('.bz-swipe-indicator');
       addStyleToHead(paginationStyleText);
+      pageClick();
 
       function setActive(i) {
         if (i === index) {
-          return 'is-active'
+          return 'is-active';
         } else {
-          return ''
+          return '';
         }
       }
+    }
+
+    function pageClick() {
+      if (!clickable) { return; }
+      var $pagination = document.querySelector('#bz-swipe-indicators');
+      var $indicators = $pagination.querySelectorAll('.bz-swipe-indicator');
+      $indicators.forEach(function (item, index) {
+        on(item, 'click', function (e) {
+          e.stopPropagation();
+          var t = parseInt(e.target.getAttribute('data-index'), 10);
+          if (index === t) {
+            slide(index, speed);
+          }
+        });
+      });
     }
 
     function addActive(index) {
@@ -226,7 +262,7 @@
 
     function circle(index) {
       // a simple positive modulo using slides.length
-      return (slides.length + index % slides.length) % slides.length;
+      return (slides.length + (index % slides.length)) % slides.length;
     }
 
     function slide(to, slideSpeed) {
@@ -318,7 +354,9 @@
         }
 
         element.style.left =
-          (to - from) * (Math.floor(timeElap / speed * 100) / 100) + from + 'px';
+          (to - from) * (Math.floor((timeElap / speed) * 100) / 100) +
+          from +
+          'px';
       }, 4);
     }
 
@@ -327,11 +365,12 @@
     var interval;
 
     function begin() {
+      clearTimeout(interval);
       interval = setTimeout(next, delay);
     }
 
     function stop() {
-      delay = 0;
+      delay = options.auto || 3000;
       clearTimeout(interval);
     }
 
@@ -527,7 +566,6 @@
       },
       transitionEnd: function (event) {
         if (parseInt(event.target.getAttribute('data-index'), 10) == index) {
-
           options.transitionEnd &&
             options.transitionEnd.call(event, index, slides[index]);
           addActive(index);
@@ -545,9 +583,10 @@
     // add event listeners
     if (browser.addEventListener) {
       // set touchstart event on element
-      if (browser.touch) { element.addEventListener('touchstart', events, {
-        passive: false
-      }); }
+      if (browser.touch)
+        { element.addEventListener('touchstart', events, {
+          passive: false
+        }); }
 
       if (browser.transitions) {
         element.addEventListener('webkitTransitionEnd', events, false);

@@ -3,8 +3,11 @@ import {
   removeClass
 } from '../wind-dom/class.js';
 import {
+  on
+} from '../wind-dom/event';
+import {
   addStyleToHead
-} from '../add-style/style'
+} from '../add-style/style';
 
 export function initMixin(container, options) {
   'use strict';
@@ -31,7 +34,8 @@ export function initMixin(container, options) {
       return false;
     })(document.createElement('swipe'))
   };
-  var paginationStyleText = '#bz-swipe-indicators{width:100%;position:absolute;bottom:15px;text-align:center}' +
+  var paginationStyleText =
+    '#bz-swipe-indicators{width:100%;position:absolute;bottom:15px;text-align:center}' +
     '.bz-swipe-indicator{width:8px;height:8px;display:inline-block;border-radius:100%;background:#000;opacity:0.2;margin:0 3px;}' +
     '#bz-swipe-indicators .is-active{background:#bfbfbf;}' +
     '.bz-swipe-wrap .is-active{display:block;-webkit-transform:none;transform:none;}';
@@ -45,6 +49,7 @@ export function initMixin(container, options) {
   options.continuous =
     options.continuous !== undefined ? options.continuous : true;
   var showPagination = options.showPagination ? options.showPagination : false;
+  var clickable = options.clickable ? options.clickable : false;
 
   function setup() {
     // cache slides
@@ -63,7 +68,7 @@ export function initMixin(container, options) {
 
     // create an array to store current positions of each slide
     slidePos = new Array(slides.length);
-    renderPagination()
+    renderPagination();
     // determine width of each slide
     width = container.getBoundingClientRect().width || container.offsetWidth;
 
@@ -111,19 +116,37 @@ export function initMixin(container, options) {
     var paginationHTML = '';
     $pagination.innerHTML = paginationHTML;
     for (var i = 0; i < length; i++) {
-      paginationHTML += `<span class="bz-swipe-indicator ${setActive(i)}"></span>`
+      paginationHTML += `<span class="bz-swipe-indicator ${setActive(
+        i
+      )}" data-index="${i}"></span>`;
     }
     $pagination.innerHTML = paginationHTML;
     pagination = container.querySelectorAll('.bz-swipe-indicator');
-    addStyleToHead(paginationStyleText)
+    addStyleToHead(paginationStyleText);
+    pageClick();
 
     function setActive(i) {
       if (i === index) {
-        return 'is-active'
+        return 'is-active';
       } else {
-        return ''
+        return '';
       }
     }
+  }
+
+  function pageClick() {
+    if (!clickable) return;
+    var $pagination = document.querySelector('#bz-swipe-indicators');
+    var $indicators = $pagination.querySelectorAll('.bz-swipe-indicator');
+    $indicators.forEach(function (item, index) {
+      on(item, 'click', function (e) {
+        e.stopPropagation();
+        var t = parseInt(e.target.getAttribute('data-index'), 10);
+        if (index === t) {
+          slide(index, speed);
+        }
+      });
+    });
   }
 
   function addActive(index) {
@@ -131,16 +154,16 @@ export function initMixin(container, options) {
     if (!showPagination) return;
     if (browser.transitions && options.continuous && length < 3) {
       if (index === 0 || index === 2) {
-        _index = 0
+        _index = 0;
       }
       if (index === 1 || index === 3) {
-        _index = 1
+        _index = 1;
       }
     } else {
-      _index = index
+      _index = index;
     }
     removeClass(container.querySelector('.is-active'), 'is-active');
-    addClass(pagination[_index], 'is-active')
+    addClass(pagination[_index], 'is-active');
   }
 
   function prev() {
@@ -155,7 +178,7 @@ export function initMixin(container, options) {
 
   function circle(index) {
     // a simple positive modulo using slides.length
-    return (slides.length + index % slides.length) % slides.length;
+    return (slides.length + (index % slides.length)) % slides.length;
   }
 
   function slide(to, slideSpeed) {
@@ -247,7 +270,9 @@ export function initMixin(container, options) {
       }
 
       element.style.left =
-        (to - from) * (Math.floor(timeElap / speed * 100) / 100) + from + 'px';
+        (to - from) * (Math.floor((timeElap / speed) * 100) / 100) +
+        from +
+        'px';
     }, 4);
   }
 
@@ -256,11 +281,12 @@ export function initMixin(container, options) {
   var interval;
 
   function begin() {
+    clearTimeout(interval);
     interval = setTimeout(next, delay);
   }
 
   function stop() {
-    delay = 0;
+    delay = options.auto || 3000;
     clearTimeout(interval);
   }
 
@@ -456,10 +482,9 @@ export function initMixin(container, options) {
     },
     transitionEnd: function (event) {
       if (parseInt(event.target.getAttribute('data-index'), 10) == index) {
-
         options.transitionEnd &&
           options.transitionEnd.call(event, index, slides[index]);
-        addActive(index)
+        addActive(index);
         if (delay) begin();
       }
     }
@@ -474,9 +499,10 @@ export function initMixin(container, options) {
   // add event listeners
   if (browser.addEventListener) {
     // set touchstart event on element
-    if (browser.touch) element.addEventListener('touchstart', events, {
-      passive: false
-    });
+    if (browser.touch)
+      element.addEventListener('touchstart', events, {
+        passive: false
+      });
 
     if (browser.transitions) {
       element.addEventListener('webkitTransitionEnd', events, false);
