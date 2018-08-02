@@ -33,7 +33,7 @@ Here list Props on bz-swipe component
 | ----- | ----- |
 | speed | Number(default: 300) speed of animation. |
 | startSlide |  Integer (default:0)  the start swipe item index |
-| auto | Number(default: 3000) delay of auto slide. |
+| auto | Number(default: 0) delay of auto slide. |
 | continuous | Boolean (default:true) - create an infinite feel with no end points |
 | showPagination | Boolean (default:false) - show Pagination on slider bottom. |
 | clickable | Boolean (default:false) - If true then clicking on pagination button will cause transition to appropriate slide.

@@ -9,9 +9,8 @@ var mySwipe1 = new Bzswipe('.bz-swipe-1', {
   callback: function (index, ele) {}
 })
 
+
 var mySwipe2 = new Bzswipe('.bz-swipe-2', {
-  auto: 3000,
   stopPropagation: true,
-  continuous: true,
   callback: function (index, ele) {}
 })

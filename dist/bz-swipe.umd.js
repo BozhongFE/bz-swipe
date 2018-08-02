@@ -97,15 +97,16 @@
 
   function initMixin(container, options) {
 
-    var noop = function () {};
-    var offloadFn = function (fn) {
+    var noop = function() {};
+    var offloadFn = function(fn) {
       setTimeout(fn || noop, 0);
     };
     var browser = {
       addEventListener: !!window.addEventListener,
-      touch: 'ontouchstart' in window ||
+      touch:
+        'ontouchstart' in window ||
         (window.DocumentTouch && document instanceof DocumentTouch),
-      transitions: (function (temp) {
+      transitions: (function(temp) {
         var props = [
           'transitionProperty',
           'WebkitTransition',
@@ -113,9 +114,8 @@
           'OTransition',
           'msTransition'
         ];
-        for (var i in props)
-          { if (temp.style[props[i]] !== undefined) { return true; } }
-        return false;
+        for (var i in props) { if (temp.style[props[i]] !== undefined) { return true } }
+        return false
       })(document.createElement('swipe'))
     };
     var paginationStyleText =
@@ -123,7 +123,7 @@
       '.bz-swipe-indicator{width:8px;height:8px;display:inline-block;border-radius:100%;background:#000;opacity:0.2;margin:0 3px;}' +
       '#bz-swipe-indicators .is-active{background:#bfbfbf;}' +
       '.bz-swipe-wrap .is-active{display:block;-webkit-transform:none;transform:none;}';
-    if (!container) { return; }
+    if (!container) { return }
     var element = container.children[0];
     var slides, slidePos, width, length;
     var pagination;
@@ -187,7 +187,7 @@
       var frag;
       var $pagination;
       var div;
-      if (!showPagination) { return; }
+      if (!showPagination) { return }
       $pagination = document.getElementById('bz-swipe-indicators');
       if (!$pagination) {
         frag = document.createDocumentFragment();
@@ -211,19 +211,19 @@
 
       function setActive(i) {
         if (i === index) {
-          return 'is-active';
+          return 'is-active'
         } else {
-          return '';
+          return ''
         }
       }
     }
 
     function pageClick() {
-      if (!clickable) { return; }
+      if (!clickable) { return }
       var $pagination = document.querySelector('#bz-swipe-indicators');
       var $indicators = $pagination.querySelectorAll('.bz-swipe-indicator');
-      $indicators.forEach(function (item, index) {
-        on(item, 'click', function (e) {
+      $indicators.forEach(function(item, index) {
+        on(item, 'click', function(e) {
           e.stopPropagation();
           var t = parseInt(e.target.getAttribute('data-index'), 10);
           if (index === t) {
@@ -235,7 +235,7 @@
 
     function addActive(index) {
       var _index;
-      if (!showPagination) { return; }
+      if (!showPagination) { return }
       if (browser.transitions && options.continuous && length < 3) {
         if (index === 0 || index === 2) {
           _index = 0;
@@ -262,12 +262,12 @@
 
     function circle(index) {
       // a simple positive modulo using slides.length
-      return (slides.length + (index % slides.length)) % slides.length;
+      return (slides.length + (index % slides.length)) % slides.length
     }
 
     function slide(to, slideSpeed) {
       // do nothing if already on requested slide
-      if (index == to) { return; }
+      if (index == to) { return }
 
       if (browser.transitions) {
         var direction = Math.abs(index - to) / (index - to); // 1: backward, -1: forward
@@ -287,11 +287,7 @@
 
         // move all the slides between index and to in the right direction
         while (diff--)
-          { move(
-            circle((to > index ? to : index) - diff - 1),
-            width * direction,
-            0
-          ); }
+          { move(circle((to > index ? to : index) - diff - 1), width * direction, 0); }
 
         to = circle(to);
 
@@ -319,7 +315,7 @@
       var slide = slides[index];
       var style = slide && slide.style;
 
-      if (!style) { return; }
+      if (!style) { return }
 
       style.webkitTransitionDuration = style.MozTransitionDuration = style.msTransitionDuration = style.OTransitionDuration = style.transitionDuration =
         speed + 'ms';
@@ -333,12 +329,12 @@
       // if not an animation, just reposition
       if (!speed) {
         element.style.left = to + 'px';
-        return;
+        return
       }
 
       var start = +new Date();
 
-      var timer = setInterval(function () {
+      var timer = setInterval(function() {
         var timeElap = +new Date() - start;
 
         if (timeElap > speed) {
@@ -350,18 +346,16 @@
             options.transitionEnd.call(event, index, slides[index]);
 
           clearInterval(timer);
-          return;
+          return
         }
 
         element.style.left =
-          (to - from) * (Math.floor((timeElap / speed) * 100) / 100) +
-          from +
-          'px';
+          (to - from) * (Math.floor((timeElap / speed) * 100) / 100) + from + 'px';
       }, 4);
     }
 
     // setup auto slideshow
-    var delay = options.auto || 3000;
+    var delay = options.auto || 0;
     var interval;
 
     function begin() {
@@ -370,7 +364,7 @@
     }
 
     function stop() {
-      delay = options.auto || 3000;
+      delay = 0;
       clearTimeout(interval);
     }
 
@@ -381,32 +375,32 @@
 
     // setup event capturing
     var events = {
-      handleEvent: function (event) {
+      handleEvent: function(event) {
         switch (event.type) {
           case 'touchstart':
             this.start(event);
-            break;
+            break
           case 'touchmove':
             this.move(event);
-            break;
+            break
           case 'touchend':
             offloadFn(this.end(event));
-            break;
+            break
           case 'webkitTransitionEnd':
           case 'msTransitionEnd':
           case 'oTransitionEnd':
           case 'otransitionend':
           case 'transitionend':
             offloadFn(this.transitionEnd(event));
-            break;
+            break
           case 'resize':
             offloadFn(setup);
-            break;
+            break
         }
 
         if (options.stopPropagation) { event.stopPropagation(); }
       },
-      start: function (event) {
+      start: function(event) {
         var touches = event.touches[0];
 
         // measure start values
@@ -433,10 +427,9 @@
           passive: false
         });
       },
-      move: function (event) {
+      move: function(event) {
         // ensure swiping with one touch and not pinching
-        if (event.touches.length > 1 || (event.scale && event.scale !== 1))
-          { return; }
+        if (event.touches.length > 1 || (event.scale && event.scale !== 1)) { return }
 
         if (options.disableScroll) { event.preventDefault(); }
 
@@ -465,27 +458,17 @@
           if (options.continuous) {
             // we don't add resistance at the end
 
-            translate(
-              circle(index - 1),
-              delta.x + slidePos[circle(index - 1)],
-              0
-            );
+            translate(circle(index - 1), delta.x + slidePos[circle(index - 1)], 0);
             translate(index, delta.x + slidePos[index], 0);
-            translate(
-              circle(index + 1),
-              delta.x + slidePos[circle(index + 1)],
-              0
-            );
+            translate(circle(index + 1), delta.x + slidePos[circle(index + 1)], 0);
           } else {
             delta.x =
               delta.x /
               ((!index && delta.x > 0) || // if first slide and sliding left
-                (index == slides.length - 1 && // or if last slide and sliding right
-                  delta.x < 0) // and if sliding at all
-                ?
-                Math.abs(delta.x) / width + 1 // determine resistance level
-                :
-                1); // no resistance if false
+              (index == slides.length - 1 && // or if last slide and sliding right
+                delta.x < 0) // and if sliding at all
+                ? Math.abs(delta.x) / width + 1 // determine resistance level
+                : 1); // no resistance if false
 
             // translate 1:1
             translate(index - 1, delta.x + slidePos[index - 1], 0);
@@ -494,7 +477,7 @@
           }
         }
       },
-      end: function (event) {
+      end: function(event) {
         // measure duration
         var duration = +new Date() - start.time;
 
@@ -542,7 +525,7 @@
             }
             options.callback && options.callback(index, slides[index]);
             index = index;
-            delay = options.auto || 3000;
+            //delay = options.auto || 0;
           } else {
             if (options.continuous) {
               move(circle(index - 1), -width, speed);
@@ -563,8 +546,11 @@
         element.removeEventListener('touchend', events, {
           passive: false
         });
+        if (options.continuous) {
+          delay = options.auto || 0; // set the delay option back
+        }
       },
-      transitionEnd: function (event) {
+      transitionEnd: function(event) {
         if (parseInt(event.target.getAttribute('data-index'), 10) == index) {
           options.transitionEnd &&
             options.transitionEnd.call(event, index, slides[index]);
@@ -599,44 +585,44 @@
       // set resize event on window
       window.addEventListener('resize', events, false);
     } else {
-      window.onresize = function () {
+      window.onresize = function() {
         setup();
       }; // to play nice with old IE
     }
 
     // expose the Swipe API
     return {
-      setup: function () {
+      setup: function() {
         setup();
       },
-      slide: function (to, speed) {
+      slide: function(to, speed) {
         // cancel slideshow
         stop();
         slide(to, speed);
       },
-      prev: function () {
+      prev: function() {
         // cancel slideshow
         stop();
         prev();
       },
-      next: function () {
+      next: function() {
         // cancel slideshow
         stop();
         next();
       },
-      stop: function () {
+      stop: function() {
         // cancel slideshow
         stop();
       },
-      getCurrentIndex: function () {
+      getCurrentIndex: function() {
         // return current index position
-        return index;
+        return index
       },
-      getNumSlides: function () {
+      getNumSlides: function() {
         // return total number of slides
-        return length;
+        return length
       }
-    };
+    }
   }
 
   function Bzswipe(el, options) {
