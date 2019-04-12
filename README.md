@@ -106,3 +106,11 @@ bz-swipe exposes a few functions like swipe that can be useful for script contro
 `getNumSlides()` returns the total amount of slides
 
 `slide(index, duration)` slide to set index position (duration: speed of transition in milliseconds)
+
+
+## History
+
+| Version | Description |
+| ----- | ----- |
+| 0.1.3 | unknown version |
+| 0.1.4 | fix: Cause page scrolling when touched |

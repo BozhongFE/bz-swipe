@@ -398,6 +398,7 @@ function initMixin(container, options) {
       if (options.stopPropagation) { event.stopPropagation(); }
     },
     start: function (event) {
+      event.preventDefault();
       var touches = event.touches[0];
 
       // measure start values
