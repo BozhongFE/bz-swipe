@@ -35,9 +35,9 @@ export function initMixin(container, options) {
     })(document.createElement('swipe'))
   }
   var paginationStyleText =
-    '#bz-swipe-indicators{width:100%;position:absolute;bottom:15px;text-align:center}' +
+    '.bz-swipe-indicators{width:100%;position:absolute;bottom:15px;text-align:center}' +
     '.bz-swipe-indicator{width:8px;height:8px;display:inline-block;border-radius:100%;background:#000;opacity:0.2;margin:0 3px;}' +
-    '#bz-swipe-indicators .is-active{background:#bfbfbf;}' +
+    '.bz-swipe-indicators .is-active{background:#bfbfbf;}' +
     '.bz-swipe-wrap .is-active{display:block;-webkit-transform:none;transform:none;}'
   if (!container) return
   var element = container.children[0]
@@ -99,7 +99,7 @@ export function initMixin(container, options) {
     container.style.visibility = 'visible'
     setTimeout(function () {
       renderPagination()
-    }, 1000)
+    }, 0)
   }
 
   function renderPagination() {
@@ -107,14 +107,14 @@ export function initMixin(container, options) {
     var $pagination
     var div
     if (!showPagination) return
-    $pagination = document.getElementById('bz-swipe-indicators')
+    $pagination = container.querySelector('.bz-swipe-indicators')
     if (!$pagination) {
       frag = document.createDocumentFragment()
       div = document.createElement('div')
-      div.id = 'bz-swipe-indicators'
+      div.className = 'bz-swipe-indicators'
       frag.appendChild(div)
       container.appendChild(frag)
-      $pagination = document.getElementById('bz-swipe-indicators')
+      $pagination = container.querySelector('.bz-swipe-indicators')
     }
     var paginationHTML = ''
     $pagination.innerHTML = paginationHTML
@@ -139,7 +139,7 @@ export function initMixin(container, options) {
 
   function pageClick() {
     if (!clickable) return
-    var $pagination = document.querySelector('#bz-swipe-indicators')
+    var $pagination = container.querySelector('.bz-swipe-indicators')
     var $indicators = $pagination.querySelectorAll('.bz-swipe-indicator')
     $indicators.forEach(function (item, index) {
       on(item, 'click', function (e) {

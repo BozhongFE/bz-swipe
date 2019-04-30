@@ -12,5 +12,6 @@ var mySwipe1 = new Bzswipe('.bz-swipe-1', {
 
 var mySwipe2 = new Bzswipe('.bz-swipe-2', {
   stopPropagation: true,
+  showPagination: true,
   callback: function (index, ele) {}
 })
