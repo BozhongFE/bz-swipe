@@ -398,7 +398,8 @@ function initMixin(container, options) {
       if (options.stopPropagation) { event.stopPropagation(); }
     },
     start: function (event) {
-      event.preventDefault();
+      // tag:A not preventDefault
+      if (event.target.tagName !== 'A') { event.preventDefault(); }
       var touches = event.touches[0];
 
       // measure start values

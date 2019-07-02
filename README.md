@@ -115,3 +115,4 @@ bz-swipe exposes a few functions like swipe that can be useful for script contro
 | 0.1.3 | unknown version |
 | 0.1.4 | fix: Cause page scrolling when touched |
 | 0.1.4 | fix: document.getElementById => container.querySelector, id => class |
+| 0.1.5 | fix: tag:A touch failure |
